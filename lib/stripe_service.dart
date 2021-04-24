@@ -6,10 +6,13 @@ import 'package:stripe_payment/stripe_payment.dart';
 import 'package:http/http.dart' as http;
 
 class StripeService {
+  StripeService._constructor();
+  static final StripeService instance = StripeService._constructor();
+
   static String apiBase = 'https://api.stripe.com/v1';
   static String paymentApi = '$apiBase/payment_intents';
 
-  static void init() {
+  void init() {
     StripePayment.setOptions(
       StripeOptions(
         publishableKey: publish,
@@ -19,11 +22,10 @@ class StripeService {
     );
   }
 
-  static Future<void> payWithNewCard({
+  Future<void> payWithNewCard({
     @required int amount,
     @required String currency,
   }) async {
-    init();
     final paymentMethod = await StripePayment.paymentRequestWithCardForm(
       CardFormPaymentRequest(),
     );
@@ -43,8 +45,7 @@ class StripeService {
     print(confirmPayment);
   }
 
-  // Este se conecta con el server de TFT...
-  static Future<Map<String, dynamic>> getPaymentIntent({
+  Future<Map<String, dynamic>> getPaymentIntent({
     @required int amount,
     @required String currency,
   }) async {
@@ -72,6 +73,4 @@ class StripeService {
 
     return {};
   }
-
-  static confirmPayment(String clientSecret, String paymentMethodId) {}
 }
