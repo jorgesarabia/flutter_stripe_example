@@ -38,10 +38,36 @@ class _HomePageState extends State<HomePage> {
               price: price,
               description: 'Esta es la descripción del item $index',
               onTap: () {
-                widget.stripeService.payWithNewCard(
-                  amount: (price * 100).toInt(),
-                  currency: 'CAD',
-                );
+                showDialog(
+                    context: context,
+                    builder: (_) {
+                      return AlertDialog(
+                        title: Text('Va comprar el item $index por CAD $price'),
+                        content: Text('Seleccionar método de pago'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              widget.stripeService.payWithNewCard(
+                                amount: (price * 100).toInt(),
+                                currency: 'CAD',
+                              );
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Pagar con tarjeta'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              widget.stripeService.payWithToken(
+                                amount: (price * 100).toInt(),
+                                currency: 'CAD',
+                              );
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Pagar con token'),
+                          ),
+                        ],
+                      );
+                    });
               },
             );
           },

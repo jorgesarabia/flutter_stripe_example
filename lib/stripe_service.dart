@@ -11,6 +11,15 @@ class StripeService {
 
   static String apiBase = 'https://api.stripe.com/v1';
   static String paymentApi = '$apiBase/payment_intents';
+  static String tokenKey = 'creditCardToken';
+
+  final CreditCard _testCard = CreditCard(
+    number: '4111111111111111',
+    expMonth: 08,
+    expYear: 30,
+  );
+
+  // final Token _token;
 
   void init() {
     StripePayment.setOptions(
@@ -30,7 +39,7 @@ class StripeService {
       CardFormPaymentRequest(),
     );
 
-    final paymentIntent = await getPaymentIntent(
+    final paymentIntent = await _getPaymentIntent(
       amount: amount,
       currency: currency,
     );
@@ -45,7 +54,44 @@ class StripeService {
     print(confirmPayment);
   }
 
-  Future<Map<String, dynamic>> getPaymentIntent({
+  Future<void> payWithToken({
+    @required int amount,
+    @required String currency,
+  }) async {
+    Token token = await _getCreditCardToken(_testCard);
+
+    final paymentMethod = await _createPaymentMethodWithToken(token);
+
+    final paymentIntent = await _getPaymentIntent(
+      amount: amount,
+      currency: currency,
+    );
+
+    final confirmPayment = await StripePayment.confirmPaymentIntent(
+      PaymentIntent(
+        clientSecret: paymentIntent['client_secret'],
+        paymentMethodId: paymentMethod.id,
+      ),
+    );
+
+    print(confirmPayment);
+  }
+
+  Future<Token> _getCreditCardToken(CreditCard card) async {
+    final token = await StripePayment.createTokenWithCard(card);
+
+    return token;
+  }
+
+  Future<PaymentMethod> _createPaymentMethodWithToken(Token token) async {
+    return await StripePayment.createPaymentMethod(
+      PaymentMethodRequest(
+        card: CreditCard(token: token.tokenId),
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> _getPaymentIntent({
     @required int amount,
     @required String currency,
   }) async {
