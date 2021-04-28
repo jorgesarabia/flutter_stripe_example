@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                               );
                               Navigator.of(context).pop();
                             },
-                            child: Text('Guardar Info'),
+                            child: Text('Pagar y registrar customer'),
                           ),
                         ],
                       );
