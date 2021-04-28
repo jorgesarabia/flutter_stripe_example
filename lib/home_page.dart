@@ -65,6 +65,16 @@ class _HomePageState extends State<HomePage> {
                             },
                             child: Text('Pagar con token'),
                           ),
+                          TextButton(
+                            onPressed: () {
+                              widget.stripeService.saveInfo(
+                                amount: (price * 100).toInt(),
+                                currency: 'CAD',
+                              );
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Guardar Info'),
+                          ),
                         ],
                       );
                     });
