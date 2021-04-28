@@ -133,6 +133,16 @@ class StripeService {
     print(confirmPayment);
   }
 
+  Future<Map<String, dynamic>> _getSavedCustomer() async {
+    final pref = await SharedPreferences.getInstance();
+    if (pref.containsKey(customerKey)) {
+      return jsonDecode(pref.getString(customerKey));
+    }
+
+    return null;
+  }
+
+  //This is the responsibility of your server
   Future<Map<String, dynamic>> _createCustomer(String paymentMethodId) async {
     try {
       final response = await http.post(
@@ -165,15 +175,7 @@ class StripeService {
     return {};
   }
 
-  Future<Map<String, dynamic>> _getSavedCustomer() async {
-    final pref = await SharedPreferences.getInstance();
-    if (pref.containsKey(customerKey)) {
-      return jsonDecode(pref.getString(customerKey));
-    }
-
-    return null;
-  }
-
+  //This is the responsibility of your server
   Future<Map<String, dynamic>> _getPaymentIntent({
     @required int amount,
     @required String currency,
